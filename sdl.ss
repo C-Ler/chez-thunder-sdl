@@ -1278,16 +1278,11 @@
 	  (ffi-utils)
 	  (only (srfi s1 lists) fold)
 	  (only (thunder-utils) string-replace string-split)
-	  ;; ;这个13不知道和别的又有什么不同,总会报错  2023年2月21日21:35:39
-	  ;; 与only无关,s14也使用了同一个报错的过程,而且同构.  2023年2月21日21:38:35
-	  ;; 可能与文件中的这个有关系,不知道是什么东西.  2023年2月21日21:44:42
-	  ;; 打水归来,把s14搞坏对比,发现s14多"D:\\lib\\thunderchez-trunk"这个路径,而s13没有
-	  ;; include/resolve 这个srfi private include 的syntax,只有一处引用了一个(search-paths)的过程,chezscheme下这个过程对应(map car (library-directories))
-	  ;; 但是不应该出现s14返回的路径多,s13就少了的问题  2023年2月21日23:19:21
 	  (only (srfi s13 strings) string-delete string-suffix? string-prefix?)	
 	  (srfi s14 char-sets))
 
   ;; 这个include的顺序十分重要,不然会报错:试图引用未关联的标识符sdl-  2023年2月22日21:09:07
+  ;;don't change the order of include sentences
   (include "sdl/ffi.ss")
   (include "sdl/base-types.ss")
   (include "sdl/guardian.ss")
