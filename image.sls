@@ -46,6 +46,7 @@
   (load-shared-object
    (if (null? l)
        ;; 替换了thunder兼容性低的部分  2023年3月2日21:33:16
+       ;; copy from thunder sdl2,but adds lib path
        (case (machine-type)
 	 ((i3nt  ti3nt  a6nt  ta6nt)  "SDL2_image.dll")
 	 ((i3le  ti3le  a6le  ta6le)  "SDL2_image.so")
