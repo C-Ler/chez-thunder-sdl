@@ -1,1 +1,5 @@
 通过 parse-chez-sdl-json.ss 和一堆 c2ffi 生成的 .json文件 自动生成 chezscheme 的接口函数。
+通过scheme环境运行（load “parse-chez-sdl-json.ss”）即可调用 ，但是记得把.json文件放在.ss文件的相同目录下。
+不过 parse-chez-sdl-json.ss 是被我从thunder 拷贝后魔改了的，thunder 的代码是匹配古早chezscheme的，当时的版本无法很好的提供 返回结构体的C函数的接口，魔改之后凑合能用，要是使用有什么问题，你得自己再改改。
+You can use parse-chez-sdl-json.ss by （load “parse-chez-sdl-json.ss”） to generate sdl-function.ss etc
+But parse-chez-sdl-json.ss is not perfect, it will generate someting others in the .ss file.You could fix it up by youself, enjoy.
