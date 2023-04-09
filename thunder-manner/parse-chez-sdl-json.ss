@@ -13,13 +13,11 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-(library-directories 
- '(
-   ;; "E:/库"  "E:/库/scheme-lib/packages"
-   ;; "I:/库"  "I:/库/scheme-lib/packages"
-   ;; "G:/Download/scheme库" "G:/Download/scheme库"
-   "D:\\lib" "D:\\lib\\scheme-lib\\packages"
-   "D:\\lib" "D:\\lib\\thunderchez-trunk"))
+;;thx for Aldo Nicolas Bruno; this file has been changed a little by me 2023-4-9 13:26:17
+
+;;(library-directory "xxxx") 需要将thunder 和 srfi 加入库文件路径
+;;you should use (library-directory "xxxx") here
+
 
 (import(scheme)
        (json)
@@ -98,7 +96,7 @@
 			   [else (if (symbol? tag*)
 				     tag*
 				     ;; 下面这部分应该是对ftype的类型名进行反驼峰并在后面加-t的  2023年2月20日22:21:05
-				     ;; 依然不行,有Uint8这种离谱的存在  2023年2月20日23:03:32
+				   
 				     (string->symbol 
 				      ;; (add-t
 				      ;;  (anti-camel 
