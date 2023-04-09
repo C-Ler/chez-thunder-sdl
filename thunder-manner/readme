@@ -1,0 +1,1 @@
+通过 parse-chez-sdl-json.ss 和一堆 c2ffi 生成的 .json文件 自动生成 chezscheme 的接口函数。
