@@ -1,5 +1,5 @@
 ;;;; -*- mode: Scheme; -*-
-(library (chez-sdl lib sdl)
+(library (chez-thunder-sdl sdl)
   (export make-sdl-rect
 	  sdl-rect?
 	  sdl-rect-x
