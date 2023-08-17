@@ -1,5 +1,6 @@
 ;;; tc ffi.ss
-(define-syntax define-ftype-allocator 
+(define-syntax define-ftype-allocator
+  ;; 用于scheme构造ftype对象,会将对象加入垃圾回收
   (lambda (x)
     (syntax-case x () 
       [(_ name type) 
@@ -44,6 +45,7 @@
     (define (string->datum t x)
       (datum->syntax t (string->symbol x)))
 
+    ;; 关键部分 maintain
     (syntax-case x ()
       [(_ ret-type name ((arg-name arg-type) ...) c-name)
        ;; 原作把下面注释掉了,可能古早版本没name,只有c-name
@@ -63,19 +65,35 @@
 		      [function       (ftype-ref function-ftype () function-fptr)]
 		      [arg-name arg-convert] ...)
 		 (let ([result (function arg-name ...)])
+		   ;; 将f过程返回的对象加入垃圾回收
 		   #,(case (syntax->datum #'ret-type)
 		       [(int%)             #'(if (< result 0) (raise (make-sdl2-condition (sdl-get-error result))))]
-		       [((* sdl-texture-t)
-			 (* sdl-surface-t)
-			 (* sdl-cursor-t)
-			 (* sdl-pixel-format-t)
-			 (* sdl-palette-t)
-			 (* sdl-rw-ops-t)
-			 (* sdl-mutex-t)
-			 (* sdl-window-t)
-			 (* sdl-sem-t)
-			 (* sdl-cond-t)
-			 (* sdl-renderer-t))  #'(sdl-guard-pointer result)]
+		       [(
+			 (* SDL_Surface) ;这行和贪吃蛇犯冲,不注释掉会报无效的内存引用,很蹊跷  2023年8月16日22:15:26
+			 (* SDL_Texture)
+			 (* SDL_Cursor)
+			 (* SDL_PixelFormat)
+			 (* SDL_Palette)
+			 (* SDL_RWops)
+			 (* SDL_mutex)
+			 (* SDL_Window)
+			 (* SDL_sem)
+			 (* SDL_cond)
+			 (* SDL_Renderer)
+			 ;; 应该将SDL2以外的其它几个lib中,所有作为返回值的ftype均加入,可以通过写个代码,遍历xx-ftype.xls文件中的s-exp来实现.
+			 ;; 但不确定如果不load image.dll会怎样  2023年8月16日20:29:07
+			 
+			 ;; Here should add such as (* TTF_Font) ex to support other libs except SDL2.dll.But what will happen is unknown while
+			 ;; while SDL2_ttf.dll is not loaded cause I didn't test.
+			 (* Mix_Chunk)
+			 (* Mix_Music)
+
+			 (* TTF_Font)
+
+			 (* IPaddress)
+			 (* UDPpacket)
+			 )
+			#'(sdl-guard-pointer result)]
 		       [else #'result]))))))])))
 
 (define-syntax new-struct

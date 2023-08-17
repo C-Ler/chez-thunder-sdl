@@ -25,7 +25,9 @@
      (let loop ([p (sdl-guardian)])
        (when p
 	 (when (ftype-pointer? p)
+	   ;; 在对应修改了ffi.ss的define-sdl-func后,这行的作用凸显了出来  2023年8月16日22:13:10
 	   (printf "sdl-free-garbage: freeing memory at ~x\n" p) ;没调用部分free代码后,没见到这东西工作,似乎没用  2023年3月27日20:05:20
+	   ;; 得先用sdl-guardian传入,然后结束后用collect回收,这时调用sdl-free-garbage才会有用(阅读了CSUG.ch13)  2023年5月1日10:38:02
 	   ;;[(ftype-pointer? usb-device*-array p)
 	   (cond 
 	    [(ftype-pointer? SDL_Window p) (sdl-destroy-window p)]
@@ -39,6 +41,9 @@
 	    [(ftype-pointer? SDL_Cursor p) (sdl-free-cursor p)]
 	    [(ftype-pointer? SDL_PixelFormat p) (sdl-free-format p)]
 	    [(ftype-pointer? SDL_Palette p) (sdl-free-palette p)]
+	    [(ftype-pointer? TTF_Font p) (ttf-close-font p)]
+	    [(ftype-pointer? Mix_Music p) (mix-free-music p)]
+	    [(ftype-pointer? Mix_Chunk p) (mix-free-chunk p)]
 	    ;; [(ftype-pointer? sdl-rw-ops-t p) (sdl-free-rw p)]
 	    [else
 	     (foreign-free (ftype-pointer-address p))]

@@ -100,6 +100,7 @@
 (define-ftype SDL_WindowShapeMode void*)
 (define-ftype SDL_TimerCallback void*)
 ;; (define-ftype void void*)
+
  ;; Conditions
 (define-record-type (&sdl2 make-sdl2-condition $sdl2-condition?)
   (parent &condition)

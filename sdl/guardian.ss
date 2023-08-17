@@ -21,5 +21,5 @@
   obj)
 
 (define sdl-free-garbage-func (lambda () (if #f #f)))
-(define (sdl-free-garbage-set-func f) (set! sdl-free-garbage-func f))
+(define (sdl-free-garbage-set-func f) (set! sdl-free-garbage-func f)) ;会在init.ss中调用
 (define (sdl-free-garbage) (sdl-free-garbage-func))
