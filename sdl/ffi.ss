@@ -69,7 +69,7 @@
 		   #,(case (syntax->datum #'ret-type)
 		       [(int%)             #'(if (< result 0) (raise (make-sdl2-condition (sdl-get-error result))))]
 		       [(
-			 (* SDL_Surface) ;这行和贪吃蛇犯冲,不注释掉会报无效的内存引用,很蹊跷  2023年8月16日22:15:26
+			 (* SDL_Surface) 
 			 (* SDL_Texture)
 			 (* SDL_Cursor)
 			 (* SDL_PixelFormat)
