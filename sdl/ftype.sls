@@ -591,13 +591,12 @@
 (define SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA #xA)
 
 ;;; parse出来的结果,不一定都被引用,更不一定都被export,一些使用了未定义的类型的,chez-sdl和thunder都没定义...不知道parse-json是怎么过滤的  2023年2月26日19:12:39
-
 (define-sdl-func string SDL_GetPlatform () "SDL_GetPlatform")
 (define-sdl-func void* SDL_malloc ((size size_t)) "SDL_malloc")
 (define-sdl-func void* SDL_calloc ((nmemb size_t) (size size_t)) "SDL_calloc")
 (define-sdl-func void* SDL_realloc ((mem void*) (size size_t)) "SDL_realloc")
 (define-sdl-func void SDL_free ((mem void*)) "SDL_free")
-;;; 下面这个遇到了问题,chez-sdl和thunder都没定义这个,两者都没有实现 SDL_realloc_func 这个类型
+;;; chez-sdl没这个,thunder通过按名字定义各种类型的函数指针类型,从而实现了这个...2024年4月17日21:37:01
 (define-sdl-func void SDL_GetMemoryFunctions ((malloc_func (* SDL_malloc_func)) (calloc_func (* SDL_calloc_func)) (realloc_func (* SDL_realloc_func)) (free_func (* SDL_free_func))) "SDL_GetMemoryFunctions")
 				
 (define-sdl-func int SDL_SetMemoryFunctions ((malloc_func SDL_malloc_func) (calloc_func SDL_calloc_func) (realloc_func SDL_realloc_func) (free_func SDL_free_func)) "SDL_SetMemoryFunctions")
@@ -857,6 +856,8 @@
 (define-sdl-func int SDL_ConvertPixels ((width int) (height int) (src_format Uint32) (src void*) (src_pitch int) (dst_format Uint32) (dst void*) (dst_pitch int)) "SDL_ConvertPixels")
 (define-sdl-func int SDL_FillRect ((dst (* SDL_Surface)) (rect (* SDL_Rect)) (color Uint32)) "SDL_FillRect")
 (define-sdl-func int SDL_FillRects ((dst (* SDL_Surface)) (rects (* SDL_Rect)) (count int) (color Uint32)) "SDL_FillRects")
+
+;;; SDL_BlitSurface 就是下面这位仁兄换了马甲....
 (define-sdl-func int SDL_UpperBlit ((src (* SDL_Surface)) (srcrect (* SDL_Rect)) (dst (* SDL_Surface)) (dstrect (* SDL_Rect))) "SDL_UpperBlit")
 (define-sdl-func int SDL_LowerBlit ((src (* SDL_Surface)) (srcrect (* SDL_Rect)) (dst (* SDL_Surface)) (dstrect (* SDL_Rect))) "SDL_LowerBlit")
 (define-sdl-func int SDL_SoftStretch ((src (* SDL_Surface)) (srcrect (* SDL_Rect)) (dst (* SDL_Surface)) (dstrect (* SDL_Rect))) "SDL_SoftStretch")

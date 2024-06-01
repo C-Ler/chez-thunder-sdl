@@ -5,7 +5,27 @@
     (syntax-case x () 
       [(_ name type) 
        #'(define (name)
-	   (sdl-guard-pointer (make-ftype-pointer type (foreign-alloc (ftype-sizeof type)))))])))
+	   (sdl-guard-pointer (make-ftype-pointer type (foreign-alloc (ftype-sizeof type)))))]))) 
+
+(define-syntax define-sdl-func1
+  ;; chez-sdl的ftype.ss中,并没有进行反驼峰,为了实现chez-sdl之封装,嫁接于thunder之根,对thunder进行修改.
+  ;; chez-sdl使用chez的foreign-procedure,导致无法被补全和获得参数
+  ;; 这种简洁方式会导致SDL_GetMemoryFunctions当中的函数指针参数无用(* SDL_malloc_func) 2024年4月17日21:25:29
+  (lambda (x)
+    (syntax-case x ()
+      [(_ ret-type name ((arg-name arg-type) ...) c-name)
+       #`(begin
+	   #,(case (syntax->datum #'ret-type)
+	       [(string)
+		#'(define (name arg-name ...)  
+		    ((foreign-procedure c-name (arg-type ...) ret-type)
+		     arg-name ...)
+		    )]
+	       [else
+		#'(define (name arg-name ...) 
+		    ((foreign-procedure __collect_safe c-name (arg-type ...) ret-type)
+		     arg-name ...)
+		    )]))])))
 
 (define-syntax define-sdl-func
   (lambda (x)
@@ -59,14 +79,14 @@
 							#'(arg-name ...) #'(arg-type ...))])
 	 ;; #'是syntax的语法糖,用来返回syntax对象,作为syntax-case的返回值
 	 #`(begin
-	     (define (name arg-name ...) 
-	       (define-ftype function-ftype (function (renamed-type ...) renamed-ret)) ;竟然还专门构造了ffun类型而且还声明了指向函数的指针...
+	     (define (name arg-name ...)  ;这个主要是可
+	       (define-ftype function-ftype (function (renamed-type ...) renamed-ret)) ;竟然还专门构造了ffun类型而且还声明了指向函数的指针...,完全没用到chez自带的foreign-procedure
 	       (let* ([function-fptr  (make-ftype-pointer function-ftype c-name)] ;c-name提供了入口.
 		      [function       (ftype-ref function-ftype () function-fptr)]
 		      [arg-name arg-convert] ...)
 		 (let ([result (function arg-name ...)])
 		   ;; 将f过程返回的对象加入垃圾回收
-		   #,(case (syntax->datum #'ret-type)
+		   #,(case (syntax->datum #'ret-type) ;这一部分会根据返回类型展开成不同的形式 2024年4月17日19:59:28
 		       [(int%)             #'(if (< result 0) (raise (make-sdl2-condition (sdl-get-error result))))]
 		       [(
 			 (* SDL_Surface) 
